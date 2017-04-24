@@ -107,7 +107,8 @@ for k in range(len(e_w)):
 
 # print(e_z_a)
 # plt.plot(e_z_a[:])
-ax2.arrow(0.6, 0.6, 0.1, 0.35, head_width=0.02, head_length=0.03, fc='k', ec='k')
+ax2.arrow(0.6, 0.6, 0.1, 0.35,
+          head_width=0.02, head_length=0.03, fc='k', ec='k')
 ax2.text(0.45, 0.6, r'$\varepsilon_{ht} = 0.5$', fontsize=16)
 ax2.text(0.55, 0.95, r'$\varepsilon_{ht} = 0.9$', fontsize=16)
 ax2.set_xlabel('ratio hole diameter to cavity length d/L')
