@@ -19,7 +19,7 @@ def convert_columns(filename):
                 data[i][j] = float("{0:.5f}".format(1. - data[i][j]))
 
 
-    with open(filenameout, 'w') as csvfile:
+    with open(filenameout, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter='\t')
         for n in range(len(data)):
             spamwriter.writerow(data[n])
@@ -29,9 +29,14 @@ def convert_columns(filename):
 # convert_columns('/home/mgessner/vm_share/Beispieldatei.txt')
 import sys
 
-if len(sys.argv) != 2:
+print(len(sys.argv))
+if len(sys.argv) < 2:
     print('Bitte zu konvertierende Textdatei angeben und erneut versuchen!')
-elif len(sys.argv) == 2:
-    convert_columns(sys.argv[1])
+# elif len(sys.argv) == 2:
+#     convert_columns(sys.argv[1])
+elif len(sys.argv) >= 2:
+    for k in range(2, len(sys.argv) + 1):
+        # print(k)
+        convert_columns(sys.argv[k])
 
 # convert_columns('Beispieldatei.txt')
