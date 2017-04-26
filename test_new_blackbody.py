@@ -102,7 +102,8 @@ for k in range(len(e_w)):
     # print(k)
     e_z_a[k] = np.array(special_bb_cavity_d_l(e_w[k], dist_length))
     # print(e_z_a[k])
-    plt.plot(dist_length, e_z_a[k], label=r"$\varepsilon_{ht} = " + str(e_w[k]) + r'$')
+    plt.plot(dist_length, e_z_a[k],
+             label=r"$\varepsilon_{ht} = " + str(e_w[k]) + r'$')
 
 
 # print(e_z_a)

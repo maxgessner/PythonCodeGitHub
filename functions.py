@@ -400,6 +400,7 @@ def delta_cp_and_e_ht(raw_puv=[], raw_time=[], raw_pv=[], raw_pv_time=[],
 
 # (a, b, c, d) = delta_cp_and_e_ht()
 # print(a,b,c(1400),c(2300),d)
+# passt
 
 
 def choose_cutoff(data, time):
@@ -622,6 +623,7 @@ def getdata(rawdata):
 
     return(raw_dat, raw_time, raw_pv, raw_pv_time, filt_dat,
            current_all, r_spec_all)
+# passt
 
 
 def window_function(rawdata, lowerbound, upperbound,
@@ -778,6 +780,7 @@ def window_function(rawdata, lowerbound, upperbound,
         plt.show()
 
     return(middle, description, high, low)
+# passt
 
 
 def bb_cavity(e_w, l, d):
@@ -814,3 +817,4 @@ def special_bb_cavity_d_l(e_w, d_l):
         + e_w * d_l
 
     return e_z
+# passt
