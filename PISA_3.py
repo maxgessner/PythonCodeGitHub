@@ -194,11 +194,17 @@ if 'puv' in locals() and 'pv ' in locals():
 
 # convert pyrometer values to real temperatures using calibration files
 if 'puv' in locals():
-    temp_puv = cal_pyrotemp(puv, 'PUV')
+    # uncomment for real data
+    # temp_puv = cal_pyrotemp(puv, 'PUV')
+    # uncommented for test reasons
+    temp_puv = puv
     # print('blub')
 
 if 'pv' in locals():
-    temp_pv = cal_pyrotemp(pv, 'PV')
+    # uncomment for real data
+    # temp_pv = cal_pyrotemp(pv, 'PV')
+    # uncommented for test reasons
+    temp_pv = pv
     # print('bla')
 
 if 'pvm' in locals():
