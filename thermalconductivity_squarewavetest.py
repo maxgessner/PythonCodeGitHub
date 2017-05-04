@@ -133,17 +133,46 @@ t_a = 300  # K
 
 t_raw = np.array(filt_dat)
 
-# calculate 1st and 2nd derivative along each profile (x direction)
-t_x = np.diff(t_raw, 1, axis=0)
-t_2x = np.diff(t_raw, 2, axis=0)
+# gradient is more powerfull than diff
+# it calculates derivatives at the point regarding
+# one point left and one point right
+
+# calculate 1st and 2nd gradient along each profile (x direction)
+tx = np.gradient(t_raw, axis=0) / np.gradient(raw_time, axis=0)
+t2x = (np.gradient(np.gradient(t_raw, axis=0) /
+                   np.gradient(raw_time, axis=0), axis=0) /
+       np.gradient(raw_time, axis=0))
 # calculate 1st derivative from profile to profile (t direction)
-t_t = np.diff(t_raw, 1, axis=1)
+tt = np.gradient(t_raw, axis=1) / np.gradient(raw_time, axis=1)
 
 # make them all the same length
-t = t_raw[:-2, :-1]
-tx = t_x[:-1, :-1]
-t2x = t_2x[:, :-1]
-tt = t_t[:-2, :]
+t = t_raw
+t_time = raw_time
+# tx = t_x
+# t2x = t_2x
+# tt = t_t
+
+# here be Dragons
+plt.close('all')
+plt.figure('t')
+# print(np.shape(t))
+# print(np.shape(t_time))
+for i in range(np.shape(t)[1]):
+    # print(np.shape(t_time[:, i]))
+    # print(np.shape(t[:, i]))
+    plt.plot(t_time[:, i], t[:, i])
+# plt.show()
+# exit()
+plt.figure('tx')
+plt.plot(tx)
+plt.figure('t2x')
+plt.plot(t2x)
+plt.figure('tt')
+plt.plot(tt)
+plt.show(block=False)
+# exit()
+plt.close('all')
+# here be something else
 
 # set initial values for fitting model to experimental data
 # a0 = np.ones(15)
@@ -205,7 +234,7 @@ def model(T, a):
     + a[11] * T[0]**(10) * ( T[0] * T[2] + 11 * T[1]**2 ) \
     + a[12] * T[0]**(11) * ( T[0] * T[2] + 12 * T[1]**2 ) \
     + a[13] * T[0]**(12) * ( T[0] * T[2] + 13 * T[1]**2 ) \
-    + a[14] * T[0]**(13) * ( T[0] * T[2] + 14 * T[1]**2 )
+    + a[14] * T[0]**(13) * (T[0] * T[2] + 14 * T[1]**2)
 
 
 def fun(a, rhs, T):
@@ -243,7 +272,7 @@ def heat_cond(a, t):
     #     + a[12] * t**(13. - 1) \
     #     + a[13] * t**(14. - 1) \
     #     + a[14] * t**(15. - 1)
-    tc = a[0] \
+    tc=a[0] \
         + a[1] * np.power(t, 1.) \
         + a[2] * np.power(t, 2.) \
         + a[3] * np.power(t, 3.) \
@@ -262,11 +291,11 @@ def heat_cond(a, t):
 
 
 # initiate values
-c = 0
-rest = []
-rhs = []
-T = []
-blub = []
+c=0
+rest=[]
+rhs=[]
+T=[]
+blub=[]
 
 # print(ttm)
 
@@ -281,10 +310,10 @@ for c in range(0, len(tx.T)):
     '''
     # xx = np.array(tx)
     # yy = np.array(tx)
-    tm2 = t[:, c]
-    txm2 = tx[:, c]
-    t2xm2 = t2x[:, c]
-    ttm = tt[:, c]
+    tm2=t[:, c]
+    txm2=tx[:, c]
+    t2xm2=t2x[:, c]
+    ttm=tt[:, c]
 
     # append values for right hand side to rhs
     # rhs.append(
@@ -329,8 +358,8 @@ for c in range(0, len(tx.T)):
                         xtol=2.22044604926e-16,
                         ftol=2.22044604926e-16,
                         gtol=2.22044604926e-16,
-                        # loss='cauchy',
-                        # tr_solver='exact'
+                        loss='cauchy',
+                        tr_solver='exact'
                         )
     # res = curve_fit(fun, T[c], rhs[c])
     # res = cfit(model, T[c], rhs[c])
@@ -346,7 +375,7 @@ for c in range(0, len(tx.T)):
 # now calculate the thermalconductivity from the fit values
 
 # somehow resetting the calculated values in the given function
-# retunrs values around 10**13 instead of 0
+# returns values around 10**13 instead of 0
 
 # print(rhs[0])
 # figure3 = plt.figure()
@@ -375,7 +404,7 @@ for c in range(0, len(tx.T)):
 # print(list(range(0,len(tx.T))))
 # plt.plot(t[1,:])
 # plt.show()
-rest2 = [a for a in rest]
+rest2=[a for a in rest]
 # print(type(rest2[1]))
 
 # import pprint
@@ -423,12 +452,12 @@ rest2 = [a for a in rest]
 # print(np.shape(rest2))
 
 # temp_range = np.arange(np.int(np.min(filt_dat)), np.int(np.max(filt_dat)), 1)
-temp_range = c_puv
+temp_range=c_puv
 # print(temp_range)
 
 # np.savetxt('temp_range.txt', temp_range)
 
-tc = []
+tc=[]
 # exit()
 
 for c in range(1, np.shape(rest2)[0]):
@@ -493,14 +522,14 @@ for c in range(1, np.shape(rest2)[0]):
 # plot the whole data, the fitted and the calculated values
 
 # from itertools import cycle
-lines = ["-", "--", "-.", ":"]
-linecycler = cycle(lines)
+lines=["-", "--", "-.", ":"]
+linecycler=cycle(lines)
 
 # exit()
 plt.figure('results', figsize=(15, 10))
 # print(np.shape(T)[2])
 # fig2 = plt.figure('filt_d')
-ax1 = plt.subplot(221)
+ax1=plt.subplot(221)
 plt.title('filt_d')
 # plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 4))
 
@@ -513,7 +542,7 @@ for f in range(np.shape(rhs)[0]):
 
 
 # fig3 = plt.figure('tt')
-ax2 = plt.subplot(224, sharex=ax1)
+ax2=plt.subplot(224, sharex=ax1)
 plt.title('rhs')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 3))
 
@@ -527,7 +556,7 @@ for h in range(np.shape(rhs)[0]):
 # exit()
 
 # fig4 = plt.figure('rest')
-ax3 = plt.subplot(223, sharex=ax1)
+ax3=plt.subplot(223, sharex=ax1)
 plt.title('lhs')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 3))
 
@@ -538,7 +567,7 @@ for j in range(np.shape(rhs)[0]):
 
 # fig5 = plt.figure('Ende')
 # fig5, ax5 = plt.subplots()
-ax4 = plt.subplot(222, sharex=ax1)
+ax4=plt.subplot(222, sharex=ax1)
 plt.title('Ende')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 3))
 
@@ -554,7 +583,7 @@ for k in range(np.shape(rhs)[0]):
 
 plt.show(block=False)
 
-plotall = True
+plotall=True
 
 if plotall is True:
 
