@@ -82,7 +82,9 @@ plt.plot(rest)
 # print(type(rest), len(rest))
 # print(rest)
 
-nrest = np.arange(len(rest))
+nrest = np.arange(len(rest)) * 4e-6
+# print(nrest)
+# exit()
 
 # rest2 = np.arange(len(rest))
 rest2 = np.ones(len(rest)) * \

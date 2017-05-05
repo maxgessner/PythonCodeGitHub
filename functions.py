@@ -19,7 +19,10 @@ def getcalibration(pyroname):
         # which is not connected to ZAE
         filename = directory + '\_Kalibration_Pyrometer.txt'
     elif platform.system() == 'Linux':
-        directory = ''
+        # directory = ''
+        # use directory to set path where "_Kalibration_Pyrometer.txt"
+        # can be found, if same folder -> directory = ''
+        directory = '/home/mgessner/PythonCode/'
         filename = directory + '_Kalibration_Pyrometer.txt'
     else:
         sys.exit('It is recommened to use Linux! (or Windows if you have to)')
@@ -415,7 +418,7 @@ def choose_cutoff(data, time):
     choose = True
     # i = 0
     global cut
-    cut = 10
+    cut = 100
     # global l_line
     # l_line = plt.axvline(cut)
 
