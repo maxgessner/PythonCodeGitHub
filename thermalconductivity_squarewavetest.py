@@ -351,11 +351,11 @@ for c in range(0, len(tx.T)):
     # res = minimize(fun, a0, args=(rhs[c], T[c]))
     res = least_squares(fun, a0, args=(rhs[c], T[c]),
                         method='trf',  # bounds=(-1, 1),
-                        verbose=0, jac='3-point',
+                        verbose=1, jac='3-point',
                         x_scale='jac',  # 10**(20),
                         # f_scale=10**(-8),
                         # max_nfev=2000,
-                        xtol=2.22044604926e-16,
+                        xtol=0, #2.22044604926e-16,
                         ftol=2.22044604926e-16,
                         gtol=2.22044604926e-16,
                         loss='cauchy',
