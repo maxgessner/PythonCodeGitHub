@@ -821,3 +821,65 @@ def special_bb_cavity_d_l(e_w, d_l):
 
     return e_z
 # passt
+
+
+def cal_thermocouple(voltage, typ):
+    ''' calculate temperatures from voltages in thermocouples
+
+    IMPORTANT: values to be calculated in uV (micro volt)!!! '''
+    import numpy as np
+    import pandas as pd
+    from scipy import interpolate
+    import sys
+
+    # if type == 'C':
+    #     file = 'Thermoelement_Typ_C_Reference_2.txt'
+    # elif type == 'J':
+    #     file = ''
+    # print(type(typ))
+    # typ = 'T'
+
+    file2 = 'Referenzdaten.txt'
+
+    maxlines = 0
+
+    with open(file2) as f1:
+        maxlines = sum(1 for _ in f1)
+
+    with open(file2) as f:
+        for start, line in enumerate(f, 1):
+            if typ in line:
+                # print(start)
+                break
+        for stop, line in enumerate(f, start):
+            # print(line.strip())
+            if line.strip() == '':
+                # print(stop)
+                break
+
+    if start == '' or start == maxlines:
+        print('Please check type of thermocouple entered!')
+        sys.exit()
+
+    data = pd.read_csv(file2, delimiter='\t', header=None,
+                       engine='c', decimal=',',
+                       skiprows=start, nrows=stop - start)
+
+    value = np.array(())
+    temp_C = np.array(())
+
+    data = np.array(data)
+
+    for r in range(1, np.shape(data)[0]):
+        for c in range(1, np.shape(data)[1]):
+            value = np.append(value, data[r, c])
+            temp_C = np.append(temp_C, data[0, c] + int(data[r, 0]))
+
+    temp_C = temp_C[~np.isnan(value)]
+    value = value[~np.isnan(value)]
+
+    temp = temp_C  # + 273.15  # in Kelvin
+
+    f_temp = interpolate.interp1d(value, temp, bounds_error=False)
+
+    return f_temp(voltage)
