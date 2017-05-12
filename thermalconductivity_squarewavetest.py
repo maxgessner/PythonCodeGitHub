@@ -272,7 +272,7 @@ def heat_cond(a, t):
     #     + a[12] * t**(13. - 1) \
     #     + a[13] * t**(14. - 1) \
     #     + a[14] * t**(15. - 1)
-    tc=a[0] \
+    tc = a[0] \
         + a[1] * np.power(t, 1.) \
         + a[2] * np.power(t, 2.) \
         + a[3] * np.power(t, 3.) \
