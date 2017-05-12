@@ -5,10 +5,12 @@ from Tkinter import Radiobutton, StringVar, W, Button, S
 from tkFileDialog import askdirectory
 from os import listdir
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 from scipy.optimize import least_squares
 from functions import cal_pyrotemp
 
-startdir = '/home/mgessner/vm_share/Linearity/22102015/'
+# startdir = '/home/mgessner/vm_share/Linearity/22102015/'
+startdir = '/home/mgessner/vm_share/Linearity/12052017/'
 
 root0 = tk()
 root0.withdraw()  # we don't want a full GUI,
@@ -17,7 +19,7 @@ root0.withdraw()  # we don't want a full GUI,
 dirname = askdirectory(initialdir=startdir)
 # show an "Open" dialog box and return the path to the selected file
 # print(dirname)
-if dirname == ():
+if dirname == () or dirname == '':
     exit()
 root0.destroy()
 
@@ -26,7 +28,7 @@ filenames = []
 pyrolist = []
 data_per_file = []
 # print(filenames)
-headernames = ['time', 'pyrometer', 'lamp1', 'lamp2', 'comment']
+# headernames = ['time', 'pyrometer', 'lamp1', 'lamp2', 'comment']
 
 mlamp1 = np.array(())
 mlamp2 = np.array(())
@@ -42,14 +44,24 @@ sdlampboth = np.array(())
 for file in listdir(dirname):
     if file.endswith(".txt"):
         filenames.append(file)
-        if 'PV' in file:
-            pyrolist.append('PV')
-        elif 'PVM' in file:
+        if 'PVM' in file:
             pyrolist.append('PVM')
+        elif 'PV' in file:
+            pyrolist.append('PV')
         elif 'PUV' in file:
             pyrolist.append('PUV')
-        data = pd.read_csv(dirname + "/" + file, delimiter='\t', header=1,
+        header = pd.read_csv(dirname + '/' + file, delimiter='\t', header=1,
+                             engine='c', nrows=0, decimal=',')
+        headernames = ['time', 'pyrometer', 'lamp1', 'lamp2', 'comment']
+        # print(len(header.columns))
+        if len(header.columns) == 3:
+            headernames = headernames[:2] + headernames[4:]
+            # headernames.pop(2)
+        # print(headernames)
+
+        data = pd.read_csv(dirname + '/' + file, delimiter='\t', header=1,
                            names=headernames, engine='c', decimal=',')
+        # print(data.index())
         data_per_file.append(data)
         # print(data['comment'])
         lamp1 = np.array(data[data['comment'] == 'Lamp_1']['pyrometer'])
@@ -57,10 +69,13 @@ for file in listdir(dirname):
         lampno = np.array(data[data['comment'] == 'Lamp_no']['pyrometer'])
         lampboth = np.array(data[data['comment'] == 'Lamp_both']['pyrometer'])
 
-        lamp1 = lamp1[10:-10]
-        lamp2 = lamp2[10:-10]
-        lampno = lampno[10:-10]
-        lampboth = lampboth[10:-10]
+        start = 3
+        end = 1
+
+        lamp1 = lamp1[start:-end]
+        lamp2 = lamp2[start:-end]
+        lampno = lampno[start:-end]
+        lampboth = lampboth[start:-end]
 
         # print(lamp1)
 
@@ -151,14 +166,15 @@ minTmlampsum = cal_pyrotemp(mlamp1 + mlamp2 - sdlamp1 - sdlamp2, pyrometer)
 maxTmlampboth = cal_pyrotemp(mlampboth + sdlampboth, pyrometer)
 minTmlampboth = cal_pyrotemp(mlampboth - sdlampboth, pyrometer)
 
+fig, ax = plt.subplots()
 
 # plt.plot(mlampsum, mlampboth, '.')
 # plt.show()
 # plt.plot(Tmlampsum, Tmlampboth, '.')
-plt.errorbar(Tmlampsum, Tmlampboth, marker='.', fmt='.',
-             yerr=[Tmlampsum - minTmlampsum, maxTmlampsum - Tmlampsum],
-             xerr=[Tmlampboth - minTmlampboth, maxTmlampboth - Tmlampboth],
-             label='measured points')
+ax.errorbar(Tmlampsum, Tmlampboth, marker='.', fmt='.',
+            yerr=[Tmlampsum - minTmlampsum, maxTmlampsum - Tmlampsum],
+            xerr=[Tmlampboth - minTmlampboth, maxTmlampboth - Tmlampboth],
+            label='measured points')
 # plt.show()
 
 x0 = [0, 0, 0]
@@ -189,7 +205,7 @@ result = least_squares(lincalib, x0, args=(Tmlampsum, Tmlampboth),
 
 Temp = np.arange(np.min(Tmlampsum), np.max(Tmlampsum), 0.01)
 
-plt.plot(Temp, fun(result['x'], Temp), label='fitted curve')
+ax.plot(Temp, fun(result['x'], Temp), label='fitted curve')
 plt.legend(loc=4)
 plt.xlabel('$\mathregular{T_1 + T_2}$', fontsize=14)
 plt.ylabel('$\mathregular{T_{1+2}}$', fontsize=14)
@@ -198,10 +214,19 @@ titletext = ('$\mathregular{Linearity \, fit \, with'
              '$\mathregular{T(L_1)+T(L_2) = a + b \cdot T(L_1+L_2) +}$' +
              '$\mathregular{c \cdot (T(L_1+L_2))^2}$')
 plt.title('Lineatiry calibration for ' + choice)
-plt.annotate(titletext, xy=(0.0, 0.9), xycoords='axes fraction')
+plt.annotate(titletext, xy=(0.02, 0.88), xycoords='axes fraction')
 optimal_values = ('a = ' + str(round(result['x'][0], 4)) +
                   '\nb = ' + str(round(result['x'][1], 4)) +
                   '\nc = ' + str(round(result['x'][2], 4)))
 plt.annotate(optimal_values, xy=(0.05, 0.45), xycoords='axes fraction')
+plt.grid(True)
+ax.xaxis.set_minor_locator(MultipleLocator(10))
+ax.yaxis.set_minor_locator(MultipleLocator(10))
 plt.show()
-# exit()
+
+save_figure = True
+
+if save_figure is True:
+    fig.savefig(dirname + '/Linearcalib_' + choice + '.pdf', dpi=300)
+
+exit()
