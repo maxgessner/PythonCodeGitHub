@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-from functions import bb_cavity
+# from mpl_toolkits.mplot3d import Axes3D
+# from functions import bb_cavity
 from functions import special_bb_cavity
 from functions import special_bb_cavity_d_l
+# from pylab import *
+# import pylab
 
 e_w = np.arange(0.5, 0.999, 0.1)
 length = np.arange(1., 20., 0.001)
@@ -20,7 +22,7 @@ dist_length = np.arange(min(dist) / max(length), max(dist) / min(length), 0.1)
 
 # exit()
 
-result = np.empty([len(length), len(dist), 3])  #, dtype=np.longdouble())
+result = np.empty([len(length), len(dist), 3])  # , dtype=np.longdouble())
 resultlist = np.array(())
 # print(np.shape(result))
 # print(result[1, 1])
@@ -49,8 +51,6 @@ if plot3D is True:
     Z = result[:, :, 2].flatten()
 
     # X, Y = np.meshgrid(X, Y)
-
-    from pylab import *
 
     colors = cm.hsv((Z - min(Z)) / (max(Z) - min(Z)))
     # print(max(Z))

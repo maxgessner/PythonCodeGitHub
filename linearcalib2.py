@@ -10,7 +10,8 @@ from scipy.optimize import least_squares
 from functions import cal_pyrotemp
 
 # startdir = '/home/mgessner/vm_share/Linearity/22102015/'
-startdir = '/home/mgessner/vm_share/Linearity/12052017/'
+# startdir = '/home/mgessner/vm_share/Linearity/12052017/'
+startdir = '/home/mgessner/vm_share/Linearity/test/'
 
 root0 = tk()
 root0.withdraw()  # we don't want a full GUI,
@@ -64,34 +65,96 @@ for file in listdir(dirname):
         # print(data.index())
         data_per_file.append(data)
         # print(data['comment'])
-        lamp1 = np.array(data[data['comment'] == 'Lamp_1']['pyrometer'])
-        lamp2 = np.array(data[data['comment'] == 'Lamp_2']['pyrometer'])
-        lampno = np.array(data[data['comment'] == 'Lamp_no']['pyrometer'])
-        lampboth = np.array(data[data['comment'] == 'Lamp_both']['pyrometer'])
 
-        start = 3
-        end = 1
+# for element in data_per_file:
+#     print(np.shape(element))
+# quit()
 
-        lamp1 = lamp1[start:-end]
-        lamp2 = lamp2[start:-end]
-        lampno = lampno[start:-end]
-        lampboth = lampboth[start:-end]
+lamp1 = [] #np.array(())
+lamp2 = [] #np.array(())
+lampno = [] #np.array(())
+lampboth = [] #np.array(())
 
-        # print(lamp1)
 
-        mlamp1 = np.append(mlamp1, np.mean(lamp1))
-        mlamp2 = np.append(mlamp2, np.mean(lamp2))
-        mlampno = np.append(mlampno, np.mean(lampno))
-        mlampboth = np.append(mlampboth, np.mean(lampboth))
+for element in data_per_file:
+    lamp1_test = data[data['comment'] == 'Lamp_1']['pyrometer']
+    lamp1.append(data[data['comment'] == 'Lamp_1']['pyrometer'])
+    lamp2.append(data[data['comment'] == 'Lamp_2']['pyrometer'])
+    lampno.append(data[data['comment'] == 'Lamp_no']['pyrometer'])
+    lampboth.append(data[data['comment'] == 'Lamp_both']['pyrometer'])
+    # print(data[data['comment'] == 'Lamp_both'])
+    print('hello')
+    print(np.shape(lamp1))
+print(lamp1[0])
+print(lamp1[1])
+exit()
+for element in data_per_file:
+    change = data[data['comment'].eq(data['comment'].shift()) == False]
+    change = change[change['comment'] == data['comment'][0]]
+    diffchange = np.diff(change.index)
+    changeindex = change.index
+    # print(diffchange)
+    # print(change['comment'].duplicated())
+    # print(data['comment'][0])
+    # print(change)
+    blub = np.ndarray(())
+    if len(changeindex) > 1:
+        # print(changeindex)
+        # print(len(changeindex))
+        i = 0
+        for i in range(len(changeindex)-1):
+            print(changeindex[i])
+            blub[i] = data[changeindex[i]:changeindex[i+1]]
+            # print(changeindex[i])
+            # print(changeindex[i+1])
 
-        sdlamp1 = np.append(sdlamp1, np.std(lamp1))
-        sdlamp2 = np.append(sdlamp2, np.std(lamp2))
-        sdlampno = np.append(sdlampno, np.std(lampno))
-        sdlampboth = np.append(sdlampboth, np.std(lampboth))
+    print(blub)
+    # change = (data.index[np.diff(data.index)] != 1).cumsum()
+    # i = 0
+    # for value in data['comment']:
+    #     print(value)
+    #     print(value[-1])
+    #     if value[-1] == value:
+    #         i += 1
+    #         print(i)
+    # print(change)
+    # print(data['comment'].diff)
+    # change = (data.index.val == 0).cumsum()
+    # blub = np.array_split(data,2)
+    # print(blub)
+    # print(lamp1[change[0]])
+    # print(type(lamp1_test))
+    # print(type(data))
+    # print(data['comment'].shape)
+    # print(data.iloc[1:4])
+    # print(data.columns)
+    # print(data.rownames)
 
-        # print(len(mlamp1))
-        # exit()
-        # print(path.join(dirname, file))
+    exit()
+
+    start = 3
+    end = 1
+
+    lamp1 = lamp1[start:-end]
+    lamp2 = lamp2[start:-end]
+    lampno = lampno[start:-end]
+    lampboth = lampboth[start:-end]
+
+    # print(lamp1)
+
+    mlamp1 = np.append(mlamp1, np.mean(lamp1))
+    mlamp2 = np.append(mlamp2, np.mean(lamp2))
+    mlampno = np.append(mlampno, np.mean(lampno))
+    mlampboth = np.append(mlampboth, np.mean(lampboth))
+
+    sdlamp1 = np.append(sdlamp1, np.std(lamp1))
+    sdlamp2 = np.append(sdlamp2, np.std(lamp2))
+    sdlampno = np.append(sdlampno, np.std(lampno))
+    sdlampboth = np.append(sdlampboth, np.std(lampboth))
+
+    # print(len(mlamp1))
+    # exit()
+    # print(path.join(dirname, file))
 
 # print(data_per_file[1])
 # print(sdlamp1)
@@ -202,6 +265,7 @@ result = least_squares(lincalib, x0, args=(Tmlampsum, Tmlampboth),
                        )
 # print(result)
 # print(result['x'])
+exit()
 
 Temp = np.arange(np.min(Tmlampsum), np.max(Tmlampsum), 0.01)
 

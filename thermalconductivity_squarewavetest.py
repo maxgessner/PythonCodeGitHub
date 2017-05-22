@@ -3,12 +3,13 @@ import platform
 import numpy as np
 # import numdifftools as nd
 import pandas as pd
-from scipy.signal import savgol_filter
+# from scipy.signal import savgol_filter
 import matplotlib.pyplot as plt
 # from scipy.optimize import curve_fit as cfit
 # plt.xkcd()
 # import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
+# from mpl_toolkits.mplot3d import Axes3D
+import mpl_toolkits.mplot3d
 # loading modules for fitting
 # from scipy.optimize import curve_fit
 # from scipy.optimize import leastsq
@@ -291,11 +292,11 @@ def heat_cond(a, t):
 
 
 # initiate values
-c=0
-rest=[]
-rhs=[]
-T=[]
-blub=[]
+c = 0
+rest = []
+rhs = []
+T = []
+blub = []
 
 # print(ttm)
 
@@ -310,10 +311,10 @@ for c in range(0, len(tx.T)):
     '''
     # xx = np.array(tx)
     # yy = np.array(tx)
-    tm2=t[:, c]
-    txm2=tx[:, c]
-    t2xm2=t2x[:, c]
-    ttm=tt[:, c]
+    tm2 = t[:, c]
+    txm2 = tx[:, c]
+    t2xm2 = t2x[:, c]
+    ttm = tt[:, c]
 
     # append values for right hand side to rhs
     # rhs.append(
@@ -351,11 +352,11 @@ for c in range(0, len(tx.T)):
     # res = minimize(fun, a0, args=(rhs[c], T[c]))
     res = least_squares(fun, a0, args=(rhs[c], T[c]),
                         method='trf',  # bounds=(-1, 1),
-                        verbose=1, jac='3-point',
+                        verbose=0, jac='3-point',
                         x_scale='jac',  # 10**(20),
                         # f_scale=10**(-8),
                         # max_nfev=2000,
-                        xtol=0, #2.22044604926e-16,
+                        xtol=2.22044604926e-16,
                         ftol=2.22044604926e-16,
                         gtol=2.22044604926e-16,
                         loss='cauchy',
@@ -404,7 +405,7 @@ for c in range(0, len(tx.T)):
 # print(list(range(0,len(tx.T))))
 # plt.plot(t[1,:])
 # plt.show()
-rest2=[a for a in rest]
+rest2 = [a for a in rest]
 # print(type(rest2[1]))
 
 # import pprint
@@ -452,12 +453,12 @@ rest2=[a for a in rest]
 # print(np.shape(rest2))
 
 # temp_range = np.arange(np.int(np.min(filt_dat)), np.int(np.max(filt_dat)), 1)
-temp_range=c_puv
+temp_range = c_puv
 # print(temp_range)
 
 # np.savetxt('temp_range.txt', temp_range)
 
-tc=[]
+tc = []
 # exit()
 
 for c in range(1, np.shape(rest2)[0]):
@@ -522,14 +523,14 @@ for c in range(1, np.shape(rest2)[0]):
 # plot the whole data, the fitted and the calculated values
 
 # from itertools import cycle
-lines=["-", "--", "-.", ":"]
-linecycler=cycle(lines)
+lines = ["-", "--", "-.", ":"]
+linecycler = cycle(lines)
 
 # exit()
 plt.figure('results', figsize=(15, 10))
 # print(np.shape(T)[2])
 # fig2 = plt.figure('filt_d')
-ax1=plt.subplot(221)
+ax1 = plt.subplot(221)
 plt.title('filt_d')
 # plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 4))
 
@@ -542,7 +543,7 @@ for f in range(np.shape(rhs)[0]):
 
 
 # fig3 = plt.figure('tt')
-ax2=plt.subplot(224, sharex=ax1)
+ax2 = plt.subplot(224, sharex=ax1)
 plt.title('rhs')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 3))
 
@@ -556,7 +557,7 @@ for h in range(np.shape(rhs)[0]):
 # exit()
 
 # fig4 = plt.figure('rest')
-ax3=plt.subplot(223, sharex=ax1)
+ax3 = plt.subplot(223, sharex=ax1)
 plt.title('lhs')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 3))
 
@@ -567,7 +568,7 @@ for j in range(np.shape(rhs)[0]):
 
 # fig5 = plt.figure('Ende')
 # fig5, ax5 = plt.subplots()
-ax4=plt.subplot(222, sharex=ax1)
+ax4 = plt.subplot(222, sharex=ax1)
 plt.title('Ende')
 plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 3))
 
@@ -583,7 +584,7 @@ for k in range(np.shape(rhs)[0]):
 
 plt.show(block=False)
 
-plotall=True
+plotall = True
 
 if plotall is True:
 
@@ -591,7 +592,8 @@ if plotall is True:
     # plt.title('heat conductivity')
     # print(np.shape(temp_range), np.shape(heat_cond(rest[0], temp_range)))
     for k in range(np.shape(rest)[0]):
-        plt.plot(temp_range, heat_cond(rest[k], temp_range))
+        plt.plot(temp_range, heat_cond(rest[k], temp_range),
+                 next(linecycler))
         # blafu = heat_cond(rest[k], temp_range)
     # plt.show()
 

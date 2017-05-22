@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from scipy.optimize import least_squares
 from functions import cal_pyrotemp
+import sys
 
 # set start directory for user to choose from
 # startdir = '/home/mgessner/vm_share/Linearity/22102015/'
@@ -21,14 +22,15 @@ root0.withdraw()  # we don't want a full GUI,
 dirname = askdirectory(initialdir=startdir)
 # show an "Open" dialog box and return the path to the selected file
 if dirname == () or dirname == '':
-    quit('no directory given!')
+    sys.exit('no directory given!')
 root0.destroy()
 
 # filenames = listdir(dirname)
 filenames = []
 pyrolist = []
-# dpf = np.array(())  # dpf = data per file
-# cpf = np.array(())  # cpf = comment per file
+dpf = np.array(())  # dpf = data per file
+cpf = np.array(())  # cpf = comment per file
+# apf = np.array(())
 
 # initialize arrays for mean values and standard deviation
 mlamp1 = np.array(())
@@ -65,9 +67,10 @@ for file in listdir(dirname):
 
         npdata = np.asarray(data['pyrometer'])
         npcomment = np.asarray(data['comment'])
-        # dpf = np.append(dpf, npdata)
-        # cpf = np.append(cpf, npcomment)
-        apf = np.stack((npdata, npcomment), axis=1)
+        dpf = np.append(dpf, npdata)
+        cpf = np.append(cpf, npcomment)
+        apf = np.stack((dpf, cpf), axis=1)
+        # apt = np.append(apf, (npdata, npcomment))
 
 # find out where one measurement ends and the next one starts
 split = np.where(apf[:-1, 1] != apf[1:, 1])[0]
@@ -134,11 +137,16 @@ if len(set(pyrolist)) != 1:
         # close_window()
         # root.destroy()
 
+    def quitGUI():
+        root.quit()
+        root.destroy()
+        sys.exit('aborted!')
+
     RB1 = Radiobutton(root, text='PVM', variable=v, value='PVM').pack(anchor=W)
     RB2 = Radiobutton(root, text='PV', variable=v, value='PV').pack(anchor=W)
     RB3 = Radiobutton(root, text='PUV', variable=v, value='PUV').pack(anchor=W)
     okButton = Button(root, text='OK', command=endGUI).pack(anchor=S)
-    cancelButton = Button(root, text="Cancel", command=exit).pack(anchor=W)
+    cancelButton = Button(root, text="Cancel", command=quitGUI).pack(anchor=W)
     choice = v.get()
 
     root.mainloop()
@@ -190,12 +198,17 @@ def lincalib(x, Tsum, Tboth):
     return(Tboth - (x[0] + x[1] * Tsum + x[2] * Tsum**2))
 
 
+def lincalib_penality(x, Tsum, Tboth):
+    x[0] = 1 - (x[1] + x[2])
+    return(Tboth - (x[0] + x[1] * Tsum + x[2] * Tsum**2))
+
+
 def fun(x, Tsum):
     return(x[0] + x[1] * Tsum + x[2] * Tsum**2)
 
 # using least squares technique to determine the best fitting
 # from the measured values
-result = least_squares(lincalib, x0, args=(Tmlampsum, Tmlampboth),
+result = least_squares(lincalib_penality, x0, args=(Tmlampsum, Tmlampboth),
                        method='lm',  # bounds=(-1, 1),
                        verbose=0,  # jac='3-point',
                        # x_scale='jac',  # 10**(20),
@@ -231,7 +244,7 @@ ax.yaxis.set_minor_locator(MultipleLocator(10))
 plt.show()
 
 # change this value if you want to save the plot as pdf
-save_figure = True
+save_figure = False
 
 if save_figure is True:
     fig.savefig(dirname + '/Linearcalib_' + choice + '.pdf', dpi=300)
