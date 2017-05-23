@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 # from tkinter import filedialog as fd
 # from tkinter import Tk as tk
 # for use with python 2.x
-# import tkFileDialog as df
+# import tkFileDialog as fd
 from Tkinter import Tk as tk
 # import math
 
