@@ -1,4 +1,4 @@
-import numpy as np
+# import numpy as np
 import pandas as pd
 from pandas import DataFrame
 import matplotlib.pyplot as plt
@@ -131,4 +131,3 @@ plt.show()
 # ax.plot([4,5,6])
 
 # plt.show()
-
