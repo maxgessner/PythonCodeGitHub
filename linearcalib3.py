@@ -184,12 +184,31 @@ minTmlampsum = cal_pyrotemp(mlamp1 + mlamp2 - sdlamp1 - sdlamp2, pyrometer)
 maxTmlampboth = cal_pyrotemp(mlampboth + sdlampboth, pyrometer)
 minTmlampboth = cal_pyrotemp(mlampboth - sdlampboth, pyrometer)
 
+diffTmlamp = Tmlampboth - Tmlampsum
+
+mindiffTmlamp = maxTmlampboth - Tmlampboth + maxTmlampsum - Tmlampsum
+maxdiffTmlamp = Tmlampboth - minTmlampboth + Tmlampsum - minTmlampsum
+
+fig2, ax2 = plt.subplots()
+
+ax2.errorbar(Tmlampboth, diffTmlamp, marker='.', fmt='.',
+             yerr=[maxdiffTmlamp, mindiffTmlamp])
+
+plt.xlabel('T')
+plt.ylabel(r'$\Delta T$')
+plt.title('Change in Temperature for ' + choice)
+plt.grid(True)
+# plt.xaxis.set_minor_locator(MultipleLocator(10))
+# plt.yaxis.set_minor_locator(MultipleLocator(10))
+
+
 fig, ax = plt.subplots()
 
 ax.errorbar(Tmlampsum, Tmlampboth, marker='.', fmt='.',
             yerr=[Tmlampsum - minTmlampsum, maxTmlampsum - Tmlampsum],
             xerr=[Tmlampboth - minTmlampboth, maxTmlampboth - Tmlampboth],
             label='measured points')
+
 
 x0 = [0, 0, 0]
 
@@ -206,8 +225,10 @@ def lincalib_penality(x, Tsum, Tboth):
 def fun(x, Tsum):
     return(x[0] + x[1] * Tsum + x[2] * Tsum**2)
 
+
 # using least squares technique to determine the best fitting
 # from the measured values
+
 result = least_squares(lincalib_penality, x0, args=(Tmlampsum, Tmlampboth),
                        method='lm',  # bounds=(-1, 1),
                        verbose=0,  # jac='3-point',
