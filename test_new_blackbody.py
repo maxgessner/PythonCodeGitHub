@@ -116,4 +116,92 @@ ax2.set_xlabel('ratio hole diameter to cavity length d/L')
 ax2.set_ylabel(r'effective emissivity $\varepsilon_{ht}^{new}$')
 ax2.set_title('new black body geometry')
 plt.legend(loc=3, fontsize=16)
+
+goon = True
+
+if goon is True:
+    plt.show(block=False)
+    plt.close('all')
+elif goon is False:
+    plt.show()
+    exit()
+
+
+from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib import ticker
+
+fig3, ax3 = plt.subplots()
+plt.subplots_adjust(left=0.1, bottom=0.3)
+e_w3 = np.arange(0.01, 1.0, 0.001)
+e_w30 = 0.5
+l0 = 5.0
+d0 = 0.2
+e_z_a3 = special_bb_cavity(e_w3, l0, d0)
+la, = plt.semilogy(e_w3, e_z_a3, lw=2, color='red')
+# la.set_minorticks_off()
+ax3.tick_params(axis='y', which='minor')
+# line_e_w3 = plt.axvline(x=e_w30)
+point_e_w3, = plt.plot(e_w30, special_bb_cavity(e_w30, l0, d0), '+',
+                       mew=2, ms=20)
+plt.grid(True)
+plt.grid(True, axis='y', which='minor')
+# plt.set_ylabel(which='minor')
+ax3.yaxis.set_minor_formatter(ticker.LogFormatter(labelOnlyBase=False))
+ax3.yaxis.set_major_formatter(ticker.LogFormatter())
+plt.axis([0., 1., 0.8, 1])
+
+axcolor = 'lightgoldenrodyellow'
+ax_d = plt.axes([0.2, 0.1, 0.65, 0.03])
+ax_l = plt.axes([0.2, 0.15, 0.65, 0.03])
+ax_e_w3 = plt.axes([0.2, 0.2, 0.65, 0.03])
+
+s_d = Slider(ax_d, 'perimeter', 0.1, 0.99, valinit=d0)
+s_l = Slider(ax_l, 'length', 1.0, 10, valinit=l0)
+s_e_w3 = Slider(ax_e_w3, 'emissivity', 0.01, 0.99, valinit=e_w30)
+
+
+def update(val):
+    d = s_d.val
+    l = s_l.val
+    e_w3_stat = s_e_w3.val
+    la.set_ydata(special_bb_cavity(e_w3, l, d))
+    # line_e_w3.set_xdata(e_w3_stat)
+    point_e_w3.set_ydata(special_bb_cavity(e_w3_stat, l, d))
+    point_e_w3.set_xdata(e_w3_stat)
+    cut_text.set_text(r'$\varepsilon = $' +
+                      str(round(special_bb_cavity(e_w3_stat, l, d), 4)))
+    fig3.canvas.draw_idle()
+
+
+s_l.on_changed(update)
+s_d.on_changed(update)
+s_e_w3.on_changed(update)
+
+resetax = plt.axes([0.8, 0.025, 0.1, 0.04])
+button = Button(resetax, 'Reset', color=axcolor, hovercolor='0.975')
+
+
+def reset(event):
+    s_l.reset()
+    s_d.reset()
+    s_e_w3.reset()
+
+
+button.on_clicked(reset)
+
+# e_w3_ax = plt.axes([0.025, 0.5, 0.15, 0.15])
+# radio = RadioButtons(rax, ('red', 'blue', 'green'), active=0)
+# s_e_w3 = Slider(ax_e_w3, 'emissivity', 0.1, 0.99, valinit=e_w30)
+
+
+def colorfunc(label):
+    la.set_color(label)
+    fig3.canvas.draw_idle()
+
+
+cut_text = plt.text(-3.5, 0, r'$\varepsilon = $' +
+                    str(round(special_bb_cavity(e_w30, l0, d0), 4)), size=20)
+
+# radio.on_clicked(colorfunc)
+
 plt.show()
