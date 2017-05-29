@@ -263,8 +263,8 @@ def defaultplot(title, xlabel, ylabel, xvalues, legend=''):
 # passt
 
 
-def delta_cp_and_e_ht(raw_puv=[], raw_time=[], raw_pv=[], raw_pv_time=[],
-                      plotresult=False):
+def delta_cp_and_e_ht(raw_puv=[], raw_time=[], raw_pv=[],
+                      raw_pv_time=[], plotresult=False):
     import numpy as np
     import matplotlib.pyplot as plt
     # import sys
@@ -354,8 +354,8 @@ def delta_cp_and_e_ht(raw_puv=[], raw_time=[], raw_pv=[], raw_pv_time=[],
 
         # calculate epsht from delta_cp values!!!
 
-        # delta_cp = (-1) * (dt_puv_90)**(-1) * f_epsht(puv_90_s) * sigma * p * \
-        #            (puv_90_s**4 - t_a**4) / s
+        # delta_cp = (-1) * (dt_puv_90)**(-1) * f_epsht(puv_90_s) * sigma
+        #             * p * (puv_90_s**4 - t_a**4) / s
 
         # f_delta_cp = interpolate.interp1d(puv_90_s, delta_cp, kind='linear',
         #                                   fill_value='extrapolate')
@@ -372,14 +372,14 @@ def delta_cp_and_e_ht(raw_puv=[], raw_time=[], raw_pv=[], raw_pv_time=[],
     # print(c_puv_90)
     # print(f_epsht(1800), f_epsht(1800.0001), f_epsht(1801))
 
-
     # plt.plot(c_puv_90, fun_epsht(c_puv_90), 'r.')
     # plt.show()
     # exit()
 
     # # print(min(c_puv_90))
 
-    # temp_epsht = np.arange(np.ceil(min(c_puv_90)), np.floor(max(c_puv_90)), 0.1)
+    # temp_epsht = np.arange(np.ceil(min(c_puv_90))
+    #                        np.floor(max(c_puv_90)), 0.1)
     # y_epsht = fun_epsht(temp_epsht)
     # print(fun_epsht(2000))
 
@@ -411,7 +411,7 @@ def choose_cutoff(data, time):
     import numpy as np
     # import Tkinter as tk
     import sys
-    from Tkinter import Spinbox, mainloop, Tk, Button, LEFT
+    from Tkinter import Spinbox, Tk, Button, LEFT  # , mainloop
     # from Tkinter import *
 
     global choose
@@ -466,7 +466,7 @@ def choose_cutoff(data, time):
     while choose is True:
         plt.figure('data')
         plt.plot(data)
-        l_line = plt.axvline(cut)
+        # l_line = plt.axvline(cut)
         plt.axvline(np.shape(data)[0] - cut)
         # plt.draw()
         plt.show(block=False)
@@ -481,7 +481,7 @@ def choose_cutoff(data, time):
         # print(type(data[0]))
 
         cutspin = Spinbox(master, from_=0, to=np.shape(data)[0],
-                          textvariable=cut) #, command=callback)
+                          textvariable=cut)  # , command=callback)
         cutspin.delete(0)
         cutspin.insert(0, cut)
 
@@ -681,11 +681,11 @@ def window_function(rawdata, lowerbound, upperbound,
         description['0 start'] = 0
     elif rawdata[0] > lowerbound and rawdata[0] < upperbound:
         middle = np.append(middle, 0)
-        if np.where(rawdata >= upperbound)[0][0] > \
-           np.where(rawdata <= lowerbound)[0][0]:
+        if (np.where(rawdata >= upperbound)[0][0] >
+           np.where(rawdata <= lowerbound)[0][0]):
             slope = 'up'
-        elif np.where(rawdata >= upperbound)[0][0] < \
-             np.where(rawdata <= lowerbound)[0][0]:
+        elif (np.where(rawdata >= upperbound)[0][0] <
+              np.where(rawdata <= lowerbound)[0][0]):
             slope = 'down'
 
     # while i <= len(rawdata)
